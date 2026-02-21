@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>测试 Pinata API</title>
+</head>
+<body>
+  <h1>Pinata API 测试</h1>
+  <button id="testBtn">测试 API Key</button>
+  <div id="result" style="margin-top: 20px; padding: 10px; border: 1px solid #ccc;"></div>
+
+  <script>
+    const JWT = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiIyZGIyOTExOS1iNzM2LTRmNmYtODgzOS1lNDJjM2QwZGJkNDgiLCJlbWFpbCI6Imp1bm1lbmd5ZTAwMUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGluX3BvbGljeSI6eyJyZWdpb25zIjpbeyJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MSwiaWQiOiJGUkExIn0seyJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MSwiaWQiOiJOWUMxIn1dLCJ2ZXJzaW9uIjoxfSwibWZhX2VuYWJsZWQiOmZhbHNlLCJzdGF0dXMiOiJBQ1RJVkUifSwiYXV0aGVudGljYXRpb25UeXBlIjoic2NvcGVkS2V5Iiwic2NvcGVkS2V5S2V5IjoiYmQ1Yzg5ZDYyMTdiMzliYjBlOTMiLCJzY29wZWRLZXlTZWNyZXQiOiI2OWFjNDczNmVkZWUxODM4ODlkMGZhNGJkM2M5M2FiN2M0OGE3NWRiZTA2M2NlN2ExNWY2ZjY2ZjM2NzE3OTc5IiwiZXhwIjoxODAyMjYzNzMzfQ.JFyQImBLaXcVhr38vXvjTLcrMvrkm_TEIBBQ5bW_AOc';
+
+    document.getElementById('testBtn').addEventListener('click', async () => {
+      const resultDiv = document.getElementById('result');
+      resultDiv.innerHTML = '<p>正在测试...</p>';
+
+      try {
+        // Test 1: Check authentication with testAuthentication endpoint
+        const authResponse = await fetch('https://api.pinata.cloud/data/testAuthentication', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${JWT}`
+          }
+        });
+
+        resultDiv.innerHTML += `<p><strong>认证测试:</strong> ${authResponse.status} ${authResponse.statusText}</p>`;
+        
+        if (authResponse.ok) {
+          const authData = await authResponse.json();
+          resultDiv.innerHTML += `<pre>${JSON.stringify(authData, null, 2)}</pre>`;
+        } else {
+          const errorText = await authResponse.text();
+          resultDiv.innerHTML += `<p style="color: red;">错误: ${errorText}</p>`;
+        }
+
+        // Test 2: Try to upload a small test file
+        if (authResponse.ok) {
+          resultDiv.innerHTML += '<p><strong>上传测试:</strong> 正在上传测试文件...</p>';
+          
+          const testHtml = '<html><body><h1>Test</h1></body></html>';
+          const blob = new Blob([testHtml], { type: 'text/html' });
+          const formData = new FormData();
+          formData.append('file', blob, 'test.html');
+
+          const uploadResponse = await fetch('https://api.pinata.cloud/pinning/pinFileToIPFS', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${JWT}`
+            },
+            body: formData
+          });
+
+          resultDiv.innerHTML += `<p><strong>上传结果:</strong> ${uploadResponse.status} ${uploadResponse.statusText}</p>`;
+          
+          if (uploadResponse.ok) {
+            const uploadData = await uploadResponse.json();
+            resultDiv.innerHTML += `<pre>${JSON.stringify(uploadData, null, 2)}</pre>`;
+            resultDiv.innerHTML += `<p style="color: green;">✓ API Key 有效！</p>`;
+          } else {
+            const errorText = await uploadResponse.text();
+            resultDiv.innerHTML += `<p style="color: red;">上传失败: ${errorText}</p>`;
+          }
+        }
+
+      } catch (error) {
+        resultDiv.innerHTML += `<p style="color: red;">网络错误: ${error.message}</p>`;
+      }
+    });
+  </script>
+</body>
+</html>

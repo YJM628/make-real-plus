@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>清理分享功能存储</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+    }
+    button {
+      background: #1890ff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      margin: 10px 5px;
+    }
+    button:hover {
+      background: #40a9ff;
+    }
+    .info {
+      background: #f0f0f0;
+      padding: 15px;
+      border-radius: 4px;
+      margin: 15px 0;
+      font-size: 14px;
+    }
+    .success {
+      background: #f6ffed;
+      border: 1px solid #b7eb8f;
+      color: #52c41a;
+      padding: 12px;
+      border-radius: 4px;
+      margin: 15px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>清理分享功能存储</h1>
+  
+  <div class="info">
+    <h3>当前存储的配置：</h3>
+    <div id="current-config"></div>
+  </div>
+
+  <button onclick="clearStorage()">清理所有分享配置</button>
+  <button onclick="checkStorage()">刷新查看配置</button>
+
+  <div id="result"></div>
+
+  <script>
+    const KEYS = {
+      api: 'share-ipfs-api-key',
+      provider: 'share-ipfs-provider',
+      gateway: 'share-ipfs-custom-gateway'
+    };
+
+    function checkStorage() {
+      const config = {
+        'API Key': localStorage.getItem(KEYS.api) || '(未设置，使用默认)',
+        '服务商': localStorage.getItem(KEYS.provider) || '(未设置，默认 pinata)',
+        '自定义网关': localStorage.getItem(KEYS.gateway) || '(未设置)'
+      };
+
+      let html = '<ul style="margin: 10px 0; padding-left: 20px;">';
+      for (const [key, value] of Object.entries(config)) {
+        html += `<li><strong>${key}:</strong> ${value}</li>`;
+      }
+      html += '</ul>';
+
+      document.getElementById('current-config').innerHTML = html;
+    }
+
+    function clearStorage() {
+      // 清理所有分享相关的 localStorage
+      localStorage.removeItem(KEYS.api);
+      localStorage.removeItem(KEYS.provider);
+      localStorage.removeItem(KEYS.gateway);
+
+      document.getElementById('result').innerHTML = 
+        '<div class="success">✓ 已清理所有分享配置！现在会使用内置的默认 API Key。</div>';
+      
+      checkStorage();
+    }
+
+    // 页面加载时显示当前配置
+    checkStorage();
+  </script>
+</body>
+</html>

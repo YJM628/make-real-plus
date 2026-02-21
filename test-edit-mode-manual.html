@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Mode Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .test-section {
+      margin: 20px 0;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+    .test-section h2 {
+      margin-top: 0;
+      color: #333;
+    }
+    .test-steps {
+      list-style: decimal;
+      padding-left: 20px;
+    }
+    .test-steps li {
+      margin: 10px 0;
+      line-height: 1.6;
+    }
+    .expected {
+      background: #e8f5e9;
+      padding: 10px;
+      border-left: 4px solid #4caf50;
+      margin: 10px 0;
+    }
+    .console-log {
+      background: #f5f5f5;
+      padding: 10px;
+      border-left: 4px solid #2196f3;
+      margin: 10px 0;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      overflow-x: auto;
+    }
+    .warning {
+      background: #fff3e0;
+      padding: 10px;
+      border-left: 4px solid #ff9800;
+      margin: 10px 0;
+    }
+    .checklist {
+      list-style: none;
+      padding-left: 0;
+    }
+    .checklist li {
+      padding: 8px;
+      margin: 5px 0;
+      background: #f9f9f9;
+      border-radius: 4px;
+    }
+    .checklist li:before {
+      content: "☐ ";
+      margin-right: 8px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Edit Mode Manual Test Guide</h1>
+  <p>Follow these steps to verify the Edit Mode fix is working correctly.</p>
+
+  <div class="test-section">
+    <h2>Prerequisites</h2>
+    <ul class="checklist">
+      <li>Development server is running on http://localhost:5174/</li>
+      <li>Browser DevTools console is open (F12 or Cmd+Option+I)</li>
+      <li>Console filter is set to show all logs (not just errors)</li>
+    </ul>
+  </div>
+
+  <div class="test-section">
+    <h2>Test 1: Generate HTML Pages</h2>
+    <ol class="test-steps">
+      <li>Open http://localhost:5174/ in your browser</li>
+      <li>Look for the AI Prompt Panel (usually on the left or as a floating panel)</li>
+      <li>Enter a prompt to generate multiple pages, for example:
+        <div class="console-log">Create a simple landing page with a header, hero section, and footer</div>
+      </li>
+      <li>Click the generate button and wait for the pages to be created</li>
+    </ol>
+    <div class="expected">
+      <strong>Expected Result:</strong> Multiple HTML shapes should appear on the canvas
+    </div>
+  </div>
+
+  <div class="test-section">
+    <h2>Test 2: Enter Edit Mode</h2>
+    <ol class="test-steps">
+      <li>Locate the EditorToolbar (usually at the top of the canvas)</li>
+      <li>Find and click the "Edit" button (mode-edit)</li>
+      <li>The button should become active/highlighted</li>
+    </ol>
+    <div class="expected">
+      <strong>Expected Result:</strong> Edit mode is activated, cursor may change when hovering over HTML elements
+    </div>
+  </div>
+
+  <div class="test-section">
+    <h2>Test 3: Click on HTML Element</h2>
+    <ol class="test-steps">
+      <li>Click on any HTML element within the generated page (e.g., a heading, paragraph, or button)</li>
+      <li>Watch the browser console for log messages</li>
+    </ol>
+    <div class="expected">
+      <strong>Expected Result:</strong>
+      <ul>
+        <li>Element gets a blue outline (2px solid #1890ff)</li>
+        <li>FloatingEditPanel appears to the right of the selected element</li>
+        <li>Console shows the following logs in order:</li>
+      </ul>
+    </div>
+    <div class="console-log">
+[useShadowDom] Click event detected: HTMLElement {...}
+[useShadowDom] Calling onElementClick with target: HTMLElement {...}
+[EditMode] Shadow DOM click detected, delegating to handler
+[useElementSelect] handleElementClick called: HTMLElement {...}
+[useElementSelect] shadowRootRef.current: ShadowRoot
+[useElementSelect] containerRef.current: HTMLDivElement
+[useElementSelect] Generated selector: "div.hero" (or similar)
+[useElementSelect] Setting selected element: {...}
+[EditMode] onElementSelect called: "div.hero" HTMLElement {...}
+[EditMode] Setting panel visible, position: {x: ..., y: ...}
+[EditMode] panelVisible: true selectedElement: {...}
+    </div>
+  </div>
+
+  <div class="test-section">
+    <h2>Test 4: Verify FloatingEditPanel</h2>
+    <ol class="test-steps">
+      <li>With an element selected, verify the FloatingEditPanel is visible</li>
+      <li>Check that it has three tabs: "content", "style", and "ai"</li>
+      <li>Click on the "content" tab</li>
+      <li>Try editing the text content</li>
+      <li>Click on the "style" tab</li>
+      <li>Try changing a color or size</li>
+    </ol>
+    <div class="expected">
+      <strong>Expected Result:</strong>
+      <ul>
+        <li>Panel is visible and positioned to the right of the selected element</li>
+        <li>All three tabs are clickable and show different content</li>
+        <li>Changes in the panel update the preview in real-time</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="test-section">
+    <h2>Test 5: Save Changes</h2>
+    <ol class="test-steps">
+      <li>Make some changes in the FloatingEditPanel</li>
+      <li>Click the "Save" button</li>
+    </ol>
+    <div class="expected">
+      <strong>Expected Result:</strong>
+      <ul>
+        <li>Panel closes</li>
+        <li>Changes are applied to the element</li>
+        <li>Element remains selected with blue outline</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="test-section">
+    <h2>Test 6: Cancel Changes</h2>
+    <ol class="test-steps">
+      <li>Select another element</li>
+      <li>Make some changes in the FloatingEditPanel</li>
+      <li>Click the "Cancel" button</li>
+    </ol>
+    <div class="expected">
+      <strong>Expected Result:</strong>
+      <ul>
+        <li>Panel closes</li>
+        <li>Changes are NOT applied (element returns to original state)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="test-section">
+    <h2>Test 7: Deselect Element</h2>
+    <ol class="test-steps">
+      <li>Select an element</li>
+      <li>Click outside the HTML shape (on the canvas background)</li>
+    </ol>
+    <div class="expected">
+      <strong>Expected Result:</strong>
+      <ul>
+        <li>FloatingEditPanel disappears</li>
+        <li>Blue outline is removed from the element</li>
+        <li>Console shows: <code>[EditMode] onElementDeselect called</code></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="test-section">
+    <h2>Test 8: Hover Highlight</h2>
+    <ol class="test-steps">
+      <li>In Edit mode, hover over different HTML elements (without clicking)</li>
+      <li>Move the mouse between elements</li>
+    </ol>
+    <div class="expected">
+      <strong>Expected Result:</strong>
+      <ul>
+        <li>Elements get a blue outline when hovered (edit-mode-highlight class)</li>
+        <li>Outline disappears when mouse leaves the element</li>
+        <li>Cursor changes to "move" when hovering</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="test-section">
+    <h2>Troubleshooting</h2>
+    <div class="warning">
+      <strong>If clicks are not detected:</strong>
+      <ul>
+        <li>Check console for errors (red messages)</li>
+        <li>Verify Shadow DOM is created: look for <code>[useShadowDom] Created Shadow DOM:</code> log</li>
+        <li>Check if <code>pointerEvents: 'all'</code> is set (inspect element in DevTools)</li>
+        <li>Try clicking directly on text content within elements</li>
+      </ul>
+    </div>
+    <div class="warning">
+      <strong>If panel doesn't appear:</strong>
+      <ul>
+        <li>Check if <code>panelVisible: true</code> appears in console</li>
+        <li>Verify panel position is within viewport (check x, y values in console)</li>
+        <li>Inspect the FloatingEditPanel component in React DevTools</li>
+        <li>Check if there are any CSS z-index issues</li>
+      </ul>
+    </div>
+    <div class="warning">
+      <strong>If handlers are not called:</strong>
+      <ul>
+        <li>Verify <code>[useShadowDom] Event listeners attached</code> appears in console</li>
+        <li>Check if <code>handlersRef.current</code> is being updated</li>
+        <li>Look for JavaScript errors that might be breaking the flow</li>
+        <li>Try refreshing the page and starting over</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="test-section">
+    <h2>Success Criteria</h2>
+    <ul class="checklist">
+      <li>All console logs appear in the correct order when clicking an element</li>
+      <li>FloatingEditPanel appears and is positioned correctly</li>
+      <li>Element selection works consistently (not just on first click)</li>
+      <li>Hover highlights work smoothly</li>
+      <li>Save and Cancel buttons work as expected</li>
+      <li>Deselection works when clicking outside</li>
+      <li>No JavaScript errors in console</li>
+    </ul>
+  </div>
+
+  <div class="test-section">
+    <h2>Files Modified in This Fix</h2>
+    <ul>
+      <li><code>src/components/modes/EditMode.tsx</code> - Fixed handler timing issue by using synchronous assignment instead of useEffect</li>
+      <li><code>src/hooks/useShadowDom.ts</code> - Fixed event listener options syntax and added comprehensive logging</li>
+    </ul>
+  </div>
+</body>
+</html>

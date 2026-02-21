@@ -1,0 +1,59 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+#root {
+  width: 100vw;
+  height: 100vh;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* Custom toolbar width - reduce by 20% */
+.tlui-toolbar {
+  width: 44px !important; /* Default is ~55px, reduced by 20% */
+}
+
+.tlui-toolbar__inner {
+  width: 44px !important;
+}
+
+.tlui-button__tool {
+  width: 36px !important;
+  height: 36px !important;
+  padding: 6px !important;
+  min-width: 36px !important;
+}
+
+.tlui-button__tool svg {
+  width: 18px !important;
+  height: 18px !important;
+}
+
+/* Hide the toolbar expand/collapse arrow button - try multiple selectors */
+.tlui-toolbar__extras,
+.tlui-toolbar__extras__controls,
+.tlui-toolbar__overflow,
+.tlui-layout__toolbar > div:last-child > button:last-child,
+.tlui-layout__toolbar__inner > button:last-child {
+  display: none !important;
+}
+
+/* Hide the last button in toolbar tools container */
+.tlui-toolbar__tools > *:last-child {
+  display: none !important;
+}
+
+/* Alternative: hide any button with chevron/arrow icon in toolbar */
+.tlui-toolbar button[aria-label*="more"],
+.tlui-toolbar button[aria-label*="overflow"],
+.tlui-toolbar .tlui-button__icon:has(svg[data-testid*="chevron"]),
+.tlui-toolbar .tlui-button__icon:has(svg[data-testid*="arrow"]) {
+  display: none !important;
+}
